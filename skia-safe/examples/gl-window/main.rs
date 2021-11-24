@@ -49,6 +49,8 @@ fn main() {
         pixel_format
     );
 
+    assert!(pixel_format.double_buffer);
+
     gl::load_with(|s| windowed_context.get_proc_address(s));
 
     let mut gr_context = skia_safe::gpu::DirectContext::new_gl(None, None).unwrap();
@@ -154,7 +156,13 @@ fn main() {
                 {
                     let canvas = env.surface.canvas();
                     canvas.clear(Color::WHITE);
-                    renderer::render_frame(frame % 360, 12, 60, canvas);
+
+                    let rect = skia_safe::Rect { left: 0.0, top: 0.0, right: 600.0, bottom: 600.0 };
+                    let mut paint = skia_safe::Paint::default();
+                    paint.set_color(Color::BLACK);
+                    canvas.draw_rect(rect, &paint);
+
+                    std::thread::sleep(std::time::Duration::from_millis(50));
                 }
                 env.surface.canvas().flush();
                 env.windowed_context.swap_buffers().unwrap();
